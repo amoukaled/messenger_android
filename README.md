@@ -12,13 +12,13 @@ Welcome to Messenger. An Android messaging app built using:
 - Coroutines
 - Room Persistence Library
 - ViewBinding
-- Lifecycle
 - Kotlin
 
 Note: This project is still in alpha.
 
 ### Contribute
-We use similar contributing conventions as [DuckDuckGo](https://github.com/duckduckgo/Android). See [CONTRIBUTING.md](CONTRIBUTING.md).
+We use similar contributing conventions as [DuckDuckGo](https://github.com/duckduckgo/Android).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Installation
 1. Create a Firebase Project from your Firebase Console.
