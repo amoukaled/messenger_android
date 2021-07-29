@@ -18,6 +18,7 @@ Note: This project is still in alpha.
 
 ### Contribute
 We use similar contributing conventions as [DuckDuckGo](https://github.com/duckduckgo/Android).
+
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Installation
