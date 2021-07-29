@@ -1,0 +1,56 @@
+<!--
+    * Copyright (C) 2021  Ali Moukaled
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="141.23512dp"
+    android:height="164.65993dp"
+    android:viewportWidth="141.23512"
+    android:viewportHeight="164.65993">
+  <path
+      android:pathData="m30.383,7.2h94.649c4.711,0 8.503,3.792 8.503,8.503L133.535,147.456c0,4.711 -3.792,8.503 -8.503,8.503L30.383,155.96c-4.711,0 -8.503,-3.792 -8.503,-8.503L21.88,15.704c0,-4.711 3.792,-8.503 8.503,-8.503z"
+      android:strokeWidth="2"
+      android:fillColor="#ff5200"/>
+  <path
+      android:pathData="M87.669,67.334A9.962,9.962 0,0 1,77.707 77.296,9.962 9.962,0 0,1 67.745,67.334 9.962,9.962 0,0 1,77.707 57.372,9.962 9.962,0 0,1 87.669,67.334Z"
+      android:strokeWidth="2"
+      android:fillColor="#c8b7b7"/>
+  <path
+      android:pathData="m67.123,78.56c-3.774,0 -6.813,3.039 -6.813,6.813l0,20.415l34.794,0L95.105,85.373c0,-3.774 -3.039,-6.813 -6.813,-6.813z"
+      android:strokeWidth="2.10579"
+      android:fillColor="#c8b7b7"/>
+  <path
+      android:pathData="M77.707,7.2L77.707,155.96h47.325c4.711,0 8.503,-3.793 8.503,-8.503L133.535,15.703c0,-4.711 -3.793,-8.503 -8.503,-8.503z"
+      android:strokeWidth="2"
+      android:fillColor="#666666"
+      android:fillAlpha="0.08"/>
+  <path
+      android:pathData="m14.898,28.33h13.964c4.265,0 7.698,3.433 7.698,7.698 0,4.265 -3.433,7.698 -7.698,7.698L14.898,43.725c-4.265,0 -7.698,-3.433 -7.698,-7.698 0,-4.265 3.433,-7.698 7.698,-7.698z"
+      android:strokeWidth="1.29575"
+      android:fillColor="#501644"/>
+  <path
+      android:pathData="m14.898,58.698h13.964c4.265,0 7.698,3.433 7.698,7.698 0,4.265 -3.433,7.698 -7.698,7.698L14.898,74.094c-4.265,0 -7.698,-3.433 -7.698,-7.698 0,-4.265 3.433,-7.698 7.698,-7.698z"
+      android:strokeWidth="1.29575"
+      android:fillColor="#501644"/>
+  <path
+      android:pathData="m14.898,89.066h13.964c4.265,0 7.698,3.433 7.698,7.698 0,4.265 -3.433,7.698 -7.698,7.698L14.898,104.462c-4.265,0 -7.698,-3.433 -7.698,-7.698 0,-4.265 3.433,-7.698 7.698,-7.698z"
+      android:strokeWidth="1.29575"
+      android:fillColor="#501644"/>
+  <path
+      android:pathData="m14.898,119.435h13.964c4.265,0 7.698,3.433 7.698,7.698 0,4.265 -3.433,7.698 -7.698,7.698L14.898,134.83c-4.265,0 -7.698,-3.433 -7.698,-7.698 0,-4.265 3.433,-7.698 7.698,-7.698z"
+      android:strokeWidth="1.29575"
+      android:fillColor="#501644"/>
+</vector>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    * Copyright (C) 2021  Ali Moukaled
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    -->
+
+<resources>
+
+    <dimen name="display_picture_dialog_width">240dp</dimen>
+    <dimen name="display_picture_dialog_height">240dp</dimen>
+
+    <dimen name="chat_info_dialog_width">360dp</dimen>
+    <dimen name="chat_info_dialog_height">420dp</dimen>
+
+    <dimen name="small_avatar_width">35dp</dimen>
+    <dimen name="small_avatar_height">35dp</dimen>
+
+
+    <dimen name="medium_avatar_width">60dp</dimen>
+    <dimen name="medium_avatar_height">60dp</dimen>
+
+    <dimen name="large_avatar_width">120dp</dimen>
+    <dimen name="large_avatar_height">120dp</dimen>
+
+    <dimen name="extra_large_avatar_width">180dp</dimen>
+    <dimen name="extra_large_avatar_height">180dp</dimen>
+
+
+</resources>

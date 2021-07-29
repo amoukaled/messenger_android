@@ -1,0 +1,79 @@
+<!--
+    * Copyright (C) 2021  Ali Moukaled
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    -->
+
+<resources>
+    <string name="app_name">Messenger</string>
+    <string name="logout">Logout</string>
+    <string name="open_menu">Open menu</string>
+    <string name="close_menu">Close menu</string>
+    <string name="chats">Chats</string>
+    <string name="network_error">Network Error</string>
+    <string name="went_wrong">Something went wrong</string>
+    <string name="contact_image">Contact image</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_chat">Delete chat with %1$s</string>
+    <string name="back">Back</string>
+    <string name="send">Send</string>
+    <string name="send_message_hint">Type in your message..</string>
+    <string name="invalid_code">Invalid code</string>
+    <string name="exceeded_quota">You reached your verification daily limit</string>
+    <string name="welcome">Welcome</string>
+    <string name="next">Next</string>
+    <string name="verification">Verification</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="verification_hint">Enter your phone number to receive a verification code</string>
+    <string name="invalid_number">Invalid phone number</string>
+    <string name="enter_verification_code">Verification code</string>
+    <string name="code_verification_hint">A code has been sent via SMS.</string>
+    <string name="code">Code</string>
+    <string name="enter_your_code">Enter your code</string>
+    <string name="enter_code">Enter your code</string>
+    <string name="verify">Verify</string>
+    <string name="resend">Resend</string>
+    <string name="welcome_text">Welcome to Messenger!\nUse your phone number to register.\n\nClick on Next to proceed.</string>
+    <string name="permission_edu_ui">Permission required</string>
+    <string name="contact_permission_message">Contacts permission needed for the app feature to work.</string>
+    <string name="storage_permission_message">Storage permission needed for the app feature to work.</string>
+    <string name="new_chat">New Chat</string>
+    <string name="test_message">"This is a test message. This is a test message. This is a test message. This is a test message. This is a test message. This is a test message. This is a test 4."</string>
+    <string name="message_status">Message status</string>
+    <string name="search">Search</string>
+    <string name="search_contacts">Search contacts..</string>
+    <string name="profile">Profile</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="edit">Edit</string>
+    <string name="contact_not_receiving">This contact is not receiving messages.</string>
+    <string name="contact_blocked">This contact is blocked.</string>
+    <string name="phone_number">Phone number</string>
+    <string name="number">Number</string>
+    <string name="status">Status</string>
+    <string name="enter_your_status">Enter your status</string>
+    <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
+    <string name="phone_image">Phone image</string>
+    <string name="contact">Contact</string>
+    <string name="no_contacts_message">You currently have no contacts.\nPress the refresh icon.</string>
+    <string name="message">Message</string>
+    <string name="empty_messages_hint">Type in your message..</string>
+    <string name="phone">Phone</string>
+    <string name="empty_chats_message">Start chatting by pressing</string>
+    <string name="error_occurred">An error occurred.</string>
+    <string name="image_message">Image message</string>
+    <string name="image">Image</string>
+    <string name="download">Download</string>
+</resources>
