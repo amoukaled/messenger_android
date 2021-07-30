@@ -93,6 +93,7 @@ class ProfileActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 v.clearFocus()
                 hideKeyboard(this)
+                // TODO limit the character input
                 v.text?.let {
                     val text = it.toString()
 

@@ -66,7 +66,7 @@ class FirebaseStorage : RemoteStorage {
         return uploadImage(bitmap, imageTitle, chatMediaRef)
     }
 
-    override suspend fun downloadChatMedia(imageTitle: String): Bitmap? { // TODO check if url or glide
+    override suspend fun downloadChatMedia(imageTitle: String): Bitmap? {
         return downloadImage(imageTitle, chatMediaRef)
     }
 

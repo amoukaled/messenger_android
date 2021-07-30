@@ -61,6 +61,7 @@ data class ContactWithMessages(
      * Whether the [Contact] is active on Firebase Cloud Messaging.
      */
     fun isContactActive(): Boolean {
+        // Using null-safe callbacks
         contact.token?.let {
             return true
         }

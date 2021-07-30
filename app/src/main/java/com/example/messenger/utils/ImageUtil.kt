@@ -19,12 +19,14 @@ package com.example.messenger.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+
 import java.io.ByteArrayOutputStream
-import java.util.*
 
 object ImageUtil {
 
-
+    /**
+     * Returns the preview version for the passed bitmap.
+     */
     private fun getDisplayPreviewFromBitmap(bitmap: Bitmap): Bitmap {
         var width: Int = bitmap.width
         var height: Int = bitmap.height
@@ -41,6 +43,9 @@ object ImageUtil {
         return Bitmap.createScaledBitmap(bitmap, width, height, true)
     }
 
+    /**
+     * Returns the hex string of the passed bitmap.
+     */
     fun getHexFromBitmap(bitmap: Bitmap): String {
         val minifiedBM = getDisplayPreviewFromBitmap(bitmap)
 
@@ -52,6 +57,9 @@ object ImageUtil {
         return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
+    /**
+     * Returns the bitmap of the passed hex string
+     */
     fun getBitmapFromHex(hex: String, width: Int, height: Int): Bitmap {
         val bytes = Base64.decode(hex, Base64.DEFAULT)
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)

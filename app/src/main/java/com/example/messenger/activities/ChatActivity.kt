@@ -99,8 +99,13 @@ class ChatActivity : AppCompatActivity() {
             this.phoneNumber = it
         }
 
+        // Initializing the viewModel and passing the phone number and necessary arguments
         model = ChatActivityViewModel(phoneNumber, messagingRepository, dispatchers, authRepo, remoteStorage)
+
+        // Adding the snapshot listener to get any document updates from firestore
         model.addSnapshotListener(this, phoneNumber)
+
+        // Initializing the fragments that are responsible for sending or prohibit sending messages
         messageInputFragment = MessageInputFragment(model)
         contactErrorFragment = ContactErrorFragment(null)
 
@@ -126,6 +131,7 @@ class ChatActivity : AppCompatActivity() {
      * Initializes the back button.
      */
     private fun initBackButton() {
+        // Close the activity
         binding.backButton.setOnClickListener {
             finish()
         }
@@ -135,6 +141,7 @@ class ChatActivity : AppCompatActivity() {
      * Returns a sublist of [Message] specified by the [loadMessageCount].
      */
     private fun getLimitedList(list: List<Message>): List<Message> {
+        // Returning the new messages list that is constrained by the loadMessageCount
         return if (list.size - loadMessageCount < 20) {
             list
         } else {
@@ -151,6 +158,7 @@ class ChatActivity : AppCompatActivity() {
      * the RV.
      */
     private fun initMessagesRV(chat: ContactWithMessages) {
+        // Initializes the variables if not initialized yet and pushes the RV to the bottom on every call
         if (!this::bubbleAdapter.isInitialized) {
             val limitedList = getLimitedList(chat.messages)
             bubbleAdapter = MessageBubbleAdapter(limitedList, model)
@@ -163,6 +171,8 @@ class ChatActivity : AppCompatActivity() {
                 messagesRV.addOnScrollListener(scrollListener)
             }
             initAvatar(chat.contact)
+
+            // Updates messages isRead to true
             model.updateChatOnOpen(phoneNumber, chat.contact.name)
         }
         binding.messagesRV.scrollToPosition(chat.messages.size - 1)
@@ -291,6 +301,7 @@ class ChatActivity : AppCompatActivity() {
      * Initializes the avatar according to the size in the layout.
      */
     private fun initAvatar(contact: Contact) {
+        // Setting the chat avatar
         contact.getProfilePicRoundedDrawable(
             this,
             Constants.SMALL_AVATAR_WIDTH,

@@ -52,8 +52,17 @@ interface RemoteStorage {
      */
     suspend fun deleteProfilePic(phoneNumber: String): Boolean
 
+    /**
+     * Uploads chat media.
+     * @param bitmap The image bitmap to upload.
+     * @param imageTitle The image title/ID.
+     */
     suspend fun uploadChatMedia(bitmap: Bitmap, imageTitle: String): Boolean
 
+    /**
+     * Downloads chat media.
+     * @param imageTitle The image title/ID to retrieve.
+     */
     suspend fun downloadChatMedia(imageTitle: String): Bitmap?
 
 }

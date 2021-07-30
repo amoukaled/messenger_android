@@ -20,6 +20,6 @@ package com.example.messenger.models
  * The notification to be pushed via FCM.
  */
 data class PushNotification(
-    val data: NotificationData,
+    val data: NotificationData, // The message body
     val to: String
 )

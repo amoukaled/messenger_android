@@ -45,7 +45,9 @@ interface MessagingRepository {
      */
     suspend fun sendTextMessage(notification: PushNotification, phoneNumber: String)
 
-
+    /**
+     *  Send image message via Firebase Cloud Messaging.
+     */
     suspend fun sendImageMessage(
         notification: PushNotification, bitmap: Bitmap, phoneNumber: String, context: Context
     )

@@ -18,6 +18,7 @@ package com.example.messenger.models
 
 import kotlinx.coroutines.CoroutineDispatcher
 
+// Provider of Coroutine dispatchers that will add modularity and will be helpful in writing tests.
 interface DispatcherProvider {
     val main: CoroutineDispatcher
     val io: CoroutineDispatcher

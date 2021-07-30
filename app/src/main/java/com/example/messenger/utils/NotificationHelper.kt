@@ -38,6 +38,7 @@ import kotlin.random.Random
  * Helper class for sending notifications.
  */
 object NotificationHelper {
+    // TODO add support for image message notifications
 
     private const val channelId = "not_channel"
     private const val channelName = "New message"

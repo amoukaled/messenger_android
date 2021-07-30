@@ -99,6 +99,7 @@ class ChatItemAdapter(
      * Force refreshes the adapter.
      */
     fun forceRefresh(list: List<ContactWithMessages>) {
+        // FIXME: Issue where going back to MainActivity from ChatActivity wont refresh the unread message count
         chats.clear()
         chats.addAll(list)
         this.notifyDataSetChanged()

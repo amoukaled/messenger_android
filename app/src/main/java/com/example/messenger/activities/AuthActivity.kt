@@ -64,6 +64,7 @@ class AuthActivity : AppCompatActivity() {
         model.authState.collect { event ->
             when (event) {
                 is AuthEvent.Authenticated -> {
+                    // Push to MainActivity
                     Intent(this, MainActivity::class.java).also {
                         it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(it)
@@ -71,6 +72,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 }
                 is AuthEvent.Loading -> {
+                    // Replace with progress bar indicator
                     supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_fragment, R.anim.slide_out_fragment)
                         replace(binding.authFL.id, LoadingFragment())
@@ -78,6 +80,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 }
                 is AuthEvent.Pending -> {
+                    // Replace with Code input fragment
                     supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_fragment, R.anim.slide_out_fragment)
                         replace(binding.authFL.id, CodeVerificationFragment())
@@ -85,6 +88,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 }
                 is AuthEvent.UnAuthenticated -> {
+                    // Replace with Welcome fragment
                     supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_fragment, R.anim.slide_out_fragment)
                         replace(binding.authFL.id, WelcomeFragment())
@@ -92,6 +96,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 }
                 is AuthEvent.CodeError -> {
+                    // Replace with Code input fragment that will display the error message
                     supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_fragment, R.anim.slide_out_fragment)
                         replace(binding.authFL.id, CodeVerificationFragment())
@@ -99,6 +104,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 }
                 else -> { // AuthEvent.GeneralError or AuthEvent.NumberError
+                    // Replace with PhoneNumber input fragment to display the error message
                     supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_fragment, R.anim.slide_out_fragment)
                         replace(binding.authFL.id, PhoneRegistrationFragment())
