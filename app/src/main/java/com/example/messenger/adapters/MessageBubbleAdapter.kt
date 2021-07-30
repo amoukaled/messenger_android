@@ -16,6 +16,7 @@
 
 package com.example.messenger.adapters
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -116,10 +117,15 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
 
     override fun onBindViewHolder(holder: ChatBubbleViewHolder, position: Int) {
         val message = messages[position]
-        holder.bind(message)
+        holder.bind(message, this::forceRefreshAdapter)
     }
 
     override fun getItemCount(): Int = messages.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun forceRefreshAdapter() {
+        this.notifyDataSetChanged()
+    }
 
     // Diff Util
     class MessageDiffUtilCallback(
@@ -165,7 +171,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
         /**
          * Binds the message data to the appropriate viewBinding.
          */
-        fun bind(message: Message) {
+        fun bind(message: Message, refresh: () -> Unit) {
             when (message.messageType) {
                 Constants.TEXT_MESSAGE -> {
                     if (message.fromParticipant) {
@@ -176,7 +182,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                 }
                 Constants.IMAGE_MESSAGE -> {
                     if (message.fromParticipant) {
-                        bindImageMessageFromParticipant(message)
+                        bindImageMessageFromParticipant(message, refresh)
                     } else {
                         bindImageMessageFromOwner(message)
                     }
@@ -230,7 +236,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
             }
         }
 
-        private fun bindImageMessageFromParticipant(message: Message) {
+        private fun bindImageMessageFromParticipant(message: Message, refresh: () -> Unit) {
             IncomingImageMessageBubbleBinding.bind(view).apply {
                 message.imageLink?.let { imageId ->
 
@@ -251,14 +257,12 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                         // Set loading
                         if (imageMessagePB.isVisible) imageMessagePB.isGone = true
 
-                        // Set button // TODO force refresh the item in adapter since diffutils wont detect any changes
-                        if (downloadImageButton.isGone) {
-                            downloadImageButton.isVisible = true
-                            downloadImageButton.setOnClickListener {
-                                it.isGone = true
-                                if (imageMessagePB.isGone) imageMessagePB.isVisible = true
-                                model?.downloadImage(imageId, it.context)
-                            }
+                        // Set button
+                        downloadImageButton.isVisible = true
+                        downloadImageButton.setOnClickListener {
+                            it.isGone = true
+                            if (imageMessagePB.isGone) imageMessagePB.isVisible = true
+                            model?.downloadImage(imageId, it.context, refresh)
                         }
                     } else {
                         imageMessageIV.setImageBitmap(image)
@@ -266,8 +270,23 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                         // Hide all buttons
                         if (imageMessagePB.isVisible) imageMessagePB.isGone = true
                         if (downloadImageButton.isVisible) downloadImageButton.isGone = true
-                    }
 
+                        imageMessageIV.setOnClickListener {
+                            ExpandImageFragment().apply {
+                                val bundle = Bundle().apply {
+                                    putString(
+                                        Constants.IMAGE_DIR_NAME_KEY,
+                                        InternalStorageHelper.CHAT_MEDIA_DIR
+                                    )
+                                    putString(Constants.EXPAND_IMAGE_KEY, imageId)
+                                }
+                                arguments = bundle
+                            }.show(
+                                (it.context as AppCompatActivity).supportFragmentManager,
+                                "expandImage"
+                            )
+                        }
+                    }
                 }
 
                 message.data?.let { messageData ->
@@ -332,7 +351,6 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                                     "expandImage"
                                 )
                             }
-
                         }
                     } else {
                         messageStatusIV.setImageDrawable(

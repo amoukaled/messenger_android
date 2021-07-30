@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     * Copyright (C) 2021  Ali Moukaled
     *
     * This program is free software: you can redistribute it and/or modify
@@ -40,8 +39,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="19dp"
-            android:elevation="0dp"
+            android:backgroundTint="@android:color/transparent"
             app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toTopOf="@id/cardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="400dp"

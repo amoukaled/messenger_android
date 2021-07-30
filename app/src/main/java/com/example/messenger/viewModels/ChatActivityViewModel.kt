@@ -44,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ChatActivityViewModel(
     private val phoneNumber: String,
@@ -196,7 +197,7 @@ class ChatActivityViewModel(
             }
         }
 
-    fun downloadImage(imageId: String, context: Context) {
+    fun downloadImage(imageId: String, context: Context, refresh: (() -> Unit)?) {
         viewModelScope.launch(dispatchers.io) {
             remoteStorage.downloadChatMedia(imageId)?.let {
                 InternalStorageHelper.saveImageToAppStorage(
@@ -206,7 +207,9 @@ class ChatActivityViewModel(
                     InternalStorageHelper.CHAT_MEDIA_DIR
                 )
             }
-            messagingRepository.refreshChats()
+            withContext(dispatchers.main) {
+                refresh?.invoke()
+            }
         }
     }
 
