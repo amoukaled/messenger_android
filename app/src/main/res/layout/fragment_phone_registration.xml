@@ -58,6 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:gravity="center"
                 android:text="@string/verification_hint"
                 android:textAlignment="center"
                 android:textColor="@color/grey800"
