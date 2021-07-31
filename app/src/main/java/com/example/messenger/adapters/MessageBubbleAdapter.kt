@@ -251,7 +251,12 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                             imageId,
                             InternalStorageHelper.CHAT_MEDIA_PREVIEW_DIR
                         )?.let {
-                            imageMessageIV.setImageBitmap(it) // TODO blur
+                            imageMessageIV.apply {
+                                layoutParams.height = it.height
+                                layoutParams.width = it.width
+                                setImageBitmap(it) // TODO blur
+                                requestLayout()
+                            }
                         }
 
                         // Set loading
@@ -265,7 +270,12 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                             model?.downloadImage(imageId, it.context, refresh)
                         }
                     } else {
-                        imageMessageIV.setImageBitmap(image)
+                        imageMessageIV.apply {
+                            layoutParams.height = image.height
+                            layoutParams.width = image.width
+                            setImageBitmap(image)
+                            requestLayout()
+                        }
 
                         // Hide all buttons
                         if (imageMessagePB.isVisible) imageMessagePB.isGone = true
