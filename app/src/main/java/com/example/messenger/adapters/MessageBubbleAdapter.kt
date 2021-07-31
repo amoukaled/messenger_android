@@ -175,16 +175,16 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
             when (message.messageType) {
                 Constants.TEXT_MESSAGE -> {
                     if (message.fromParticipant) {
-                        bindTextMessageFromParticipant(message)
+                        bindIncomingTextMessage(message)
                     } else {
-                        bindTextMessageFromOwner(message)
+                        bindOutgoingTextMessage(message)
                     }
                 }
                 Constants.IMAGE_MESSAGE -> {
                     if (message.fromParticipant) {
-                        bindImageMessageFromParticipant(message, refresh)
+                        bindIncomingImageMessage(message, refresh)
                     } else {
-                        bindImageMessageFromOwner(message)
+                        bindOutgoingImageMessage(message)
                     }
                 }
                 else -> {
@@ -194,7 +194,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
         }
 
 
-        private fun bindTextMessageFromParticipant(message: Message) {
+        private fun bindIncomingTextMessage(message: Message) {
             IncomingTextMessageBubbleBinding.bind(view).apply {
                 participantMessageTV.text = message.data
                 message.timestamp.also {
@@ -203,12 +203,16 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
             }
         }
 
-        private fun bindTextMessageFromOwner(message: Message) {
+        private fun bindOutgoingTextMessage(message: Message) {
             OutgoingTextMessageBubbleBinding.bind(view).apply {
                 userMessageTV.text = message.data
+
+                // Setting the time
                 message.timestamp.also {
                     messageTimeTV.text = formatTimeToString(it)
                 }
+
+                // Setting icon
                 message.isSent?.let {
                     if (it) {
                         messageStatusIV.setImageDrawable(
@@ -236,7 +240,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
             }
         }
 
-        private fun bindImageMessageFromParticipant(message: Message, refresh: () -> Unit) {
+        private fun bindIncomingImageMessage(message: Message, refresh: () -> Unit) {
             IncomingImageMessageBubbleBinding.bind(view).apply {
                 message.imageLink?.let { imageId ->
 
@@ -245,6 +249,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                         InternalStorageHelper.CHAT_MEDIA_DIR
                     )
 
+                    // If image is downloaded, display it, else display the preview
                     if (image == null) {
                         InternalStorageHelper.loadImageFromAppStorage(
                             messageTimeTV.context,
@@ -270,6 +275,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                             model?.downloadImage(imageId, it.context, refresh)
                         }
                     } else {
+                        // Set the image
                         imageMessageIV.apply {
                             layoutParams.height = image.height
                             layoutParams.width = image.width
@@ -299,28 +305,34 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                     }
                 }
 
+                // Setting message data if available
                 message.data?.let { messageData ->
                     imageMessageTV.isVisible = true
                     imageMessageTV.text = messageData
                 }
 
+                // Setting message time
                 message.timestamp.also {
                     messageTimeTV.text = formatTimeToString(it)
                 }
             }
         }
 
-        private fun bindImageMessageFromOwner(message: Message) {
+        private fun bindOutgoingImageMessage(message: Message) {
+            // TODO re-upload failed message
             OutgoingImageMessageBubbleBinding.bind(view).apply {
                 message.imageLink?.let { imageId ->
                     imageMessageIV.apply {
-                        setImageBitmap(
-                            InternalStorageHelper.loadImageFromAppStorage(
-                                context,
-                                imageId,
-                                InternalStorageHelper.CHAT_MEDIA_DIR
-                            )
-                        )
+                        InternalStorageHelper.loadImageFromAppStorage(
+                            context,
+                            imageId,
+                            InternalStorageHelper.CHAT_MEDIA_DIR
+                        )?.let { imageBitmap ->
+                            layoutParams.height = imageBitmap.height
+                            layoutParams.width = imageBitmap.width
+                            setImageBitmap(imageBitmap)
+                            requestLayout()
+                        }
                     }
                 }
 
@@ -383,7 +395,6 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                 }
             }
         }
-
     }
 
 }
