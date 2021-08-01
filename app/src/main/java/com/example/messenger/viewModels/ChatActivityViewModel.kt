@@ -18,24 +18,22 @@ package com.example.messenger.viewModels
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 
-import com.example.messenger.models.ChatEvent
-import com.example.messenger.models.DispatcherProvider
 import com.example.messenger.data.local.relations.ContactWithMessages
 import com.example.messenger.data.remote.RemoteStorage
-import com.example.messenger.models.NotificationData
-import com.example.messenger.models.PushNotification
-import com.example.messenger.repositories.AuthRepository
+import com.example.messenger.models.ChatEvent
+import com.example.messenger.models.DispatcherProvider
 import com.example.messenger.repositories.MessagingRepository
-import com.example.messenger.utils.Constants
-import com.example.messenger.utils.ImageUtil
 import com.example.messenger.utils.InternalStorageHelper
+import com.example.messenger.workers.SendImageMessageWorker
+import com.example.messenger.workers.SendTextMessageWorker
+import com.example.messenger.workers.WorkerDataConstants
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
@@ -50,12 +48,13 @@ class ChatActivityViewModel(
     private val phoneNumber: String,
     private val messagingRepository: MessagingRepository,
     private val dispatchers: DispatcherProvider,
-    private val authRepository: AuthRepository,
-    private val remoteStorage: RemoteStorage
+    private val remoteStorage: RemoteStorage,
+    context: Context
 ) : ViewModel() {
 
     private val _chat = MutableStateFlow<ChatEvent>(ChatEvent.Loading())
     val chat: StateFlow<ChatEvent> = _chat
+    private val workManager = WorkManager.getInstance(context)
 
     init {
         viewModelScope.launch(dispatchers.io) {
@@ -96,60 +95,29 @@ class ChatActivityViewModel(
      * Sends a message.
      */
     fun sendTextMessage(token: String, message: String, phoneNumber: String) {
-        authRepository.getCurrentUser()?.phoneNumber?.let { userNum ->
-            val notification =
-                PushNotification(
-                    NotificationData(
-                        userNum,
-                        message,
-                        Constants.TEXT_MESSAGE,
-                        null,
-                        null,
-                        null,
-                        null
-                    ), token
-                )
-            viewModelScope.launch(dispatchers.io) {
-                messagingRepository.sendTextMessage(notification, phoneNumber)
-            }
+        val data = Data.Builder().apply {
+            putString(WorkerDataConstants.TOKEN_KEY, token)
+            putString(WorkerDataConstants.MESSAGE_KEY, message)
+            putString(WorkerDataConstants.PHONE_NUM_KEY, phoneNumber)
         }
+        val req =
+            OneTimeWorkRequestBuilder<SendTextMessageWorker>().setInputData(data.build()).build()
+        workManager.beginWith(req).enqueue()
     }
 
     fun sendImageMessage(
-        token: String,
-        message: String?,
-        uri: Uri,
-        phoneNumber: String,
-        context: Context
+        token: String, message: String?,
+        path: String, phoneNumber: String,
     ) {
-        authRepository.getCurrentUser()?.phoneNumber?.let { userNumber ->
-            viewModelScope.launch(dispatchers.io) {
-                kotlin.runCatching {
-                    context.contentResolver.openInputStream(uri)?.let { stream ->
-                        val bitmap = BitmapFactory.decodeStream(stream)
-                        val preview = ImageUtil.getHexFromBitmap(bitmap)
-                        val notification =
-                            PushNotification(
-                                NotificationData(
-                                    userNumber,
-                                    message,
-                                    Constants.IMAGE_MESSAGE,
-                                    null,
-                                    preview,
-                                    bitmap.width,
-                                    bitmap.height
-                                ), token
-                            )
-                        messagingRepository.sendImageMessage(
-                            notification,
-                            bitmap,
-                            phoneNumber,
-                            context
-                        )
-                    }
-                }
-            }
+        val data = Data.Builder().apply {
+            putString(WorkerDataConstants.TOKEN_KEY, token)
+            putString(WorkerDataConstants.MESSAGE_KEY, message)
+            putString(WorkerDataConstants.PHONE_NUM_KEY, phoneNumber)
+            putString(WorkerDataConstants.IMAGE_URI_KEY, path)
         }
+        val req =
+            OneTimeWorkRequestBuilder<SendImageMessageWorker>().setInputData(data.build()).build()
+        workManager.beginWith(req).enqueue()
     }
 
     fun updateChatOnOpen(number: String, name: String?) {
@@ -197,6 +165,7 @@ class ChatActivityViewModel(
             }
         }
 
+    // TODO work manager
     fun downloadImage(imageId: String, context: Context, refresh: (() -> Unit)?) {
         viewModelScope.launch(dispatchers.io) {
             remoteStorage.downloadChatMedia(imageId)?.let {

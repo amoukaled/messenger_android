@@ -14,24 +14,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.example.messenger
+package com.example.messenger.workers
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
+object WorkerDataConstants {
 
-import dagger.hilt.android.HiltAndroidApp
+    const val TOKEN_KEY = "token"
+    const val MESSAGE_KEY = "message"
+    const val PHONE_NUM_KEY = "phoneNumber"
+    const val IMAGE_URI_KEY = "imageUri"
 
-import javax.inject.Inject
-
-@HiltAndroidApp
-class MessengerApp : Application(), Configuration.Provider {
-
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder().setWorkerFactory(workerFactory).build()
-    }
 }

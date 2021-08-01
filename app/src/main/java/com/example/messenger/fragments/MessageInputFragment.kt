@@ -32,12 +32,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 
 import com.example.messenger.data.local.entities.Contact
 import com.example.messenger.databinding.FragmentMessageInputBinding
 import com.example.messenger.models.ChatEvent
+import com.example.messenger.utils.getRealPathFromUri
 import com.example.messenger.viewModels.ChatActivityViewModel
 
 import kotlinx.coroutines.flow.collect
@@ -75,10 +75,12 @@ class MessageInputFragment(private val model: ChatActivityViewModel) : Fragment(
                 activityResult?.data?.data?.let { uri ->
                     model.chat.value.data?.contact?.let { contact ->
                         contact.token?.let { token ->
-                            model.sendImageMessage(
-                                token, null, uri,
-                                contact.phoneNumber, requireContext()
-                            )
+                            getRealPathFromUri(requireContext(), uri)?.let {
+                                model.sendImageMessage(
+                                    token, null, it,
+                                    contact.phoneNumber,
+                                )
+                            }
                         }
                     }
                 }

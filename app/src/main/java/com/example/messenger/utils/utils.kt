@@ -18,7 +18,10 @@ package com.example.messenger.utils
 
 import android.app.Activity
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -122,4 +125,19 @@ fun idGenerator(length: Int = 30): String {
     }
 
     return id
+}
+
+fun getRealPathFromUri(context: Context, uri: Uri): String? {
+    var cursor: Cursor? = null
+    try {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        cursor = context.contentResolver.query(uri, proj, null, null, null)
+        val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.moveToFirst()
+        return columnIndex?.let {
+            cursor?.getString(it)
+        }
+    } finally {
+        cursor?.close()
+    }
 }

@@ -46,7 +46,7 @@ object ImageUtil {
     /**
      * Returns the hex string of the passed bitmap.
      */
-    fun getHexFromBitmap(bitmap: Bitmap): String {
+    fun getPreviewHexFromBitmap(bitmap: Bitmap): String {
         val minifiedBM = getDisplayPreviewFromBitmap(bitmap)
 
         val baos = ByteArrayOutputStream()

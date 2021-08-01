@@ -37,7 +37,6 @@ import com.example.messenger.fragments.ContactErrorFragment
 import com.example.messenger.fragments.MessageInputFragment
 import com.example.messenger.models.ChatEvent
 import com.example.messenger.models.DispatcherProvider
-import com.example.messenger.repositories.AuthRepository
 import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
 import com.example.messenger.viewModels.ChatActivityViewModel
@@ -57,9 +56,6 @@ class ChatActivity : AppCompatActivity() {
 
     @Inject
     lateinit var dispatchers: DispatcherProvider
-
-    @Inject
-    lateinit var authRepo: AuthRepository
 
     @Inject
     lateinit var remoteStorage: RemoteStorage
@@ -100,7 +96,10 @@ class ChatActivity : AppCompatActivity() {
         }
 
         // Initializing the viewModel and passing the phone number and necessary arguments
-        model = ChatActivityViewModel(phoneNumber, messagingRepository, dispatchers, authRepo, remoteStorage)
+        model = ChatActivityViewModel(
+            phoneNumber, messagingRepository, dispatchers,
+            remoteStorage, applicationContext
+        )
 
         // Adding the snapshot listener to get any document updates from firestore
         model.addSnapshotListener(this, phoneNumber)

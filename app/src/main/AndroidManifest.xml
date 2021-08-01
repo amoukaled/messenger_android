@@ -37,6 +37,11 @@
             android:name="firebase_messaging_auto_init_enabled"
             android:value="true" />
 
+        <provider xmlns:tools="http://schemas.android.com/tools"
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove" />
+
         <service
             android:name="com.example.messenger.services.MessagingService"
             android:permission="com.google.android.c2dm.permission.SEND">
