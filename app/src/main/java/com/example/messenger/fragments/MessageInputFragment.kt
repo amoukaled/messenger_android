@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 
 import com.example.messenger.data.local.entities.Contact
+import com.example.messenger.data.local.relations.ContactWithMessages
 import com.example.messenger.databinding.FragmentMessageInputBinding
 import com.example.messenger.models.ChatEvent
 import com.example.messenger.utils.getRealPathFromUri
@@ -73,15 +74,16 @@ class MessageInputFragment(private val model: ChatActivityViewModel) : Fragment(
         getImage =
             registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
                 activityResult?.data?.data?.let { uri ->
-                    model.chat.value.data?.contact?.let { contact ->
-                        contact.token?.let { token ->
+                    model.chat.value.data?.let { contact ->
+                        if (contact.isContactActive()) {
                             getRealPathFromUri(requireContext(), uri)?.let {
                                 model.sendImageMessage(
-                                    token, null, it,
-                                    contact.phoneNumber,
+                                    null, it,
+                                    contact.contact.phoneNumber, requireContext()
                                 )
                             }
                         }
+
                     }
                 }
             }
@@ -107,7 +109,7 @@ class MessageInputFragment(private val model: ChatActivityViewModel) : Fragment(
                 when (event) {
                     is ChatEvent.Data -> {
                         event.data?.let { data ->
-                            initSendButton(data.contact)
+                            initSendButton(data)
                             initSendImageButton()
                         }
                     }
@@ -120,16 +122,14 @@ class MessageInputFragment(private val model: ChatActivityViewModel) : Fragment(
     /**
      * Sends a message via FCM.
      */
-    private fun initSendButton(contact: Contact) {
+    private fun initSendButton(contact: ContactWithMessages) {
         binding?.sendMessageButton?.setOnClickListener {
             binding?.userInputET?.text?.let {
                 val message = it.toString()
 
-                if (message.isNotBlank() && message.isNotEmpty()) {
-                    contact.token?.let { token ->
-                        model.sendTextMessage(token, message, contact.phoneNumber)
-                        binding?.userInputET?.text?.clear()
-                    }
+                if (message.isNotBlank() && message.isNotEmpty() && contact.isContactActive()) {
+                    model.sendTextMessage(message, contact.contact.phoneNumber)
+                    binding?.userInputET?.text?.clear()
                 }
             }
         }

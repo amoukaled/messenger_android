@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.example.messenger.R
 import com.example.messenger.adapters.MessageBubbleAdapter
+import com.example.messenger.data.local.dao.ContactDao
 import com.example.messenger.data.local.entities.Contact
 import com.example.messenger.data.local.entities.Message
 import com.example.messenger.data.local.relations.ContactWithMessages
@@ -59,6 +60,9 @@ class ChatActivity : AppCompatActivity() {
 
     @Inject
     lateinit var remoteStorage: RemoteStorage
+
+    @Inject
+    lateinit var contactDao: ContactDao
 
     // Variables
     private lateinit var binding: ActivityChatBinding
@@ -98,7 +102,7 @@ class ChatActivity : AppCompatActivity() {
         // Initializing the viewModel and passing the phone number and necessary arguments
         model = ChatActivityViewModel(
             phoneNumber, messagingRepository, dispatchers,
-            remoteStorage, applicationContext
+            remoteStorage, contactDao, applicationContext,
         )
 
         // Adding the snapshot listener to get any document updates from firestore

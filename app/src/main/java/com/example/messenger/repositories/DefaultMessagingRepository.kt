@@ -63,23 +63,11 @@ class DefaultMessagingRepository(
     }
 
 
-    override suspend fun sendTextMessage(notification: PushNotification, phoneNumber: String) {
+    override suspend fun sendTextMessage(
+        notification: PushNotification, message: Message, phoneNumber: String
+    ) {
         if (!isContactBlocked(phoneNumber) && notification.data.message != null) {
-            val message = Message(
-                notification.data.message,
-                false,
-                phoneNumber,
-                null,
-                true,
-                Calendar.getInstance().timeInMillis,
-                Constants.TEXT_MESSAGE,
-                null
-            )
             try {
-                contactDao.insertMessage(message).also {
-                    message.id = it
-                }
-                refreshChats()
                 val res = api.sendMessage(notification)
 
                 if (res.isSuccessful) {
@@ -99,42 +87,18 @@ class DefaultMessagingRepository(
         }
     }
 
-    override suspend fun sendImageMessage( // TODO workManager
-        notification: PushNotification, bitmap: Bitmap, phoneNumber: String, context: Context
+    override suspend fun sendImageMessage(
+        notification: PushNotification, message: Message, localImageId: String,
+        bitmap: Bitmap, phoneNumber: String, context: Context
     ) {
         if (!isContactBlocked(phoneNumber)) {
-            // Generate new id
-            val imageId = idGenerator()
-
-            // Save locally
-            InternalStorageHelper.saveImageToAppStorage(
-                bitmap, imageId, context,
-                InternalStorageHelper.CHAT_MEDIA_DIR
-            )
-
-            // Save Message instance
-            val message = Message(
-                notification.data.message,
-                false,
-                phoneNumber,
-                null,
-                true,
-                Calendar.getInstance().timeInMillis,
-                Constants.IMAGE_MESSAGE,
-                imageId
-            )
-            contactDao.insertMessage(message).let {
-                message.id = it
-            }
-            refreshChats()
-
             // Save remotely
             try {
-                val res = remoteStorage.uploadChatMedia(bitmap, imageId)
+                val res = remoteStorage.uploadChatMedia(bitmap, localImageId)
 
                 if (res) {
                     // Send message
-                    notification.data.image = imageId
+                    notification.data.image = localImageId
                     val result = api.sendMessage(notification)
                     message.isSent = result.isSuccessful
                     contactDao.updateMessage(message)
@@ -220,7 +184,7 @@ class DefaultMessagingRepository(
         messages.forEach { contact ->
             contact.messages.sortedBy { it.timestamp }
         }
-        _chats.emit(messages.toMutableList()) // TODO check
+        _chats.emit(messages.toMutableList())
     }
 
     override suspend fun updateContactsFromPhoneContacts() {

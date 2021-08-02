@@ -152,4 +152,7 @@ interface ContactDao {
      */
     @Delete
     suspend fun deleteContact(contact: Contact)
+
+    @Query("SELECT * FROM Message WHERE id = :id")
+    suspend fun getMessageById(id: Long): Message?
 }

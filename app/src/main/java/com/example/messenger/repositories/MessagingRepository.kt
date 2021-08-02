@@ -22,6 +22,7 @@ import android.content.Context
 import android.graphics.Bitmap
 
 import com.example.messenger.data.local.dao.ContactDao
+import com.example.messenger.data.local.entities.Message
 import com.example.messenger.data.local.relations.ContactWithMessages
 import com.example.messenger.models.PushNotification
 
@@ -43,13 +44,14 @@ interface MessagingRepository {
      * @param notification The notification to be sent to the user.
      * @param phoneNumber The phone number of the participant.
      */
-    suspend fun sendTextMessage(notification: PushNotification, phoneNumber: String)
+    suspend fun sendTextMessage(notification: PushNotification, message: Message,phoneNumber: String)
 
     /**
      *  Send image message via Firebase Cloud Messaging.
      */
     suspend fun sendImageMessage(
-        notification: PushNotification, bitmap: Bitmap, phoneNumber: String, context: Context
+        notification: PushNotification,message: Message, localImageId: String,
+        bitmap: Bitmap, phoneNumber: String, context: Context
     )
 
     /**

@@ -17,18 +17,20 @@
 package com.example.messenger.workers
 
 import android.content.Context
-import android.graphics.BitmapFactory
 
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
+import com.example.messenger.data.local.dao.ContactDao
 import com.example.messenger.models.NotificationData
 import com.example.messenger.models.PushNotification
 import com.example.messenger.repositories.AuthRepository
 import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
 import com.example.messenger.utils.ImageUtil
+import com.example.messenger.utils.InternalStorageHelper
+import com.example.messenger.workers.WorkerDataConstants.MESSAGE_ID_KEY
 
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,6 +43,9 @@ class SendImageMessageWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParams) {
 
     @Inject
+    lateinit var contactDao: ContactDao
+
+    @Inject
     lateinit var authRepository: AuthRepository
 
     @Inject
@@ -48,31 +53,37 @@ class SendImageMessageWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         inputData.apply {
-            getString(WorkerDataConstants.MESSAGE_KEY).let { message ->
-                getString(WorkerDataConstants.TOKEN_KEY)?.let { token ->
-                    getString(WorkerDataConstants.PHONE_NUM_KEY)?.let { phoneNumber ->
-                        getString(WorkerDataConstants.IMAGE_URI_KEY)?.let { uri ->
-                            authRepository.getCurrentUser()?.phoneNumber?.let { userNumber ->
-                                val bitmap = BitmapFactory.decodeFile(uri)
-                                val preview =
-                                    ImageUtil.getPreviewHexFromBitmap(bitmap)
-                                val notification =
-                                    PushNotification(
-                                        NotificationData(
-                                            userNumber,
+            getString(WorkerDataConstants.PHONE_NUM_KEY)?.let { phoneNumber ->
+                contactDao.getContactByPhoneNumber(phoneNumber)?.token?.let { token ->
+                    getString(WorkerDataConstants.LOCAL_IMAGE_ID_KEY)?.let { imageId ->
+                        authRepository.getCurrentUser()?.phoneNumber?.let { userNumber ->
+                            getLong(MESSAGE_ID_KEY, -1).let { messageId ->
+                                contactDao.getMessageById(messageId)?.let { message ->
+                                    InternalStorageHelper.loadImageFromAppStorage(
+                                        applicationContext,
+                                        imageId,
+                                        InternalStorageHelper.CHAT_MEDIA_DIR
+                                    )?.let { bitmap ->
+                                        val preview =
+                                            ImageUtil.getPreviewHexFromBitmap(bitmap)
+                                        val notification =
+                                            PushNotification(
+                                                NotificationData(
+                                                    userNumber, message.data, Constants.IMAGE_MESSAGE,
+                                                    null, preview, bitmap.width, bitmap.height
+                                                ), token
+                                            )
+                                        messagingRepository.sendImageMessage(
+                                            notification,
                                             message,
-                                            Constants.IMAGE_MESSAGE,
-                                            null,
-                                            preview,
-                                            bitmap.width,
-                                            bitmap.height
-                                        ), token
-                                    )
-                                messagingRepository.sendImageMessage(
-                                    notification, bitmap,
-                                    phoneNumber, applicationContext
-                                )
-                                return Result.success()
+                                            imageId,
+                                            bitmap,
+                                            phoneNumber,
+                                            applicationContext
+                                        )
+                                        return Result.success()
+                                    }
+                                }
                             }
                         }
                     }

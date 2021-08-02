@@ -22,14 +22,14 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
+import com.example.messenger.data.local.dao.ContactDao
 import com.example.messenger.models.NotificationData
 import com.example.messenger.models.PushNotification
 import com.example.messenger.repositories.AuthRepository
 import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
-import com.example.messenger.workers.WorkerDataConstants.MESSAGE_KEY
+import com.example.messenger.workers.WorkerDataConstants.MESSAGE_ID_KEY
 import com.example.messenger.workers.WorkerDataConstants.PHONE_NUM_KEY
-import com.example.messenger.workers.WorkerDataConstants.TOKEN_KEY
 
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -43,6 +43,8 @@ class SendTextMessageWorker @AssistedInject constructor(
 ) :
     CoroutineWorker(context, workParams) {
 
+    @Inject
+    lateinit var contactDao: ContactDao
 
     @Inject
     lateinit var messagingRepository: MessagingRepository
@@ -50,29 +52,33 @@ class SendTextMessageWorker @AssistedInject constructor(
     @Inject
     lateinit var authRepository: AuthRepository
 
+
     override suspend fun doWork(): Result {
         inputData.apply {
-            getString(MESSAGE_KEY).let { message ->
-                getString(TOKEN_KEY)?.let { token ->
-                    getString(PHONE_NUM_KEY)?.let { phoneNumber ->
+            getLong(MESSAGE_ID_KEY, -1).let { messageId ->
+                getString(PHONE_NUM_KEY)?.let { phoneNumber ->
+                    contactDao.getContactByPhoneNumber(phoneNumber)?.token?.let { token ->
                         authRepository.getCurrentUser()?.phoneNumber?.let { userNum ->
-                            val notification =
-                                PushNotification(
-                                    NotificationData(
-                                        userNum,
-                                        message,
-                                        Constants.TEXT_MESSAGE,
-                                        null,
-                                        null,
-                                        null,
-                                        null
-                                    ), token
+                            contactDao.getMessageById(messageId)?.let { message ->
+                                val notification =
+                                    PushNotification(
+                                        NotificationData(
+                                            userNum,
+                                            message.data,
+                                            Constants.TEXT_MESSAGE,
+                                            null,
+                                            null,
+                                            null,
+                                            null
+                                        ), token
+                                    )
+                                messagingRepository.sendTextMessage(
+                                    notification,
+                                    message,
+                                    phoneNumber,
                                 )
-                            messagingRepository.sendTextMessage(
-                                notification,
-                                phoneNumber
-                            )
-                            return Result.success()
+                                return Result.success()
+                            }
                         }
                     }
                 }
