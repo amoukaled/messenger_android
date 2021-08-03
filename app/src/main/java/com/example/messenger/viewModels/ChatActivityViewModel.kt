@@ -36,6 +36,7 @@ import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
 import com.example.messenger.utils.InternalStorageHelper
 import com.example.messenger.utils.idGenerator
+import com.example.messenger.workers.ResendImageMessageWorker
 import com.example.messenger.workers.SendImageMessageWorker
 import com.example.messenger.workers.SendTextMessageWorker
 import com.example.messenger.workers.WorkerDataConstants
@@ -52,12 +53,9 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 class ChatActivityViewModel(
-    private val phoneNumber: String,
-    private val messagingRepository: MessagingRepository,
-    private val dispatchers: DispatcherProvider,
-    private val remoteStorage: RemoteStorage,
-    private val contactDao: ContactDao,
-    context: Context
+    private val phoneNumber: String, private val messagingRepository: MessagingRepository,
+    private val dispatchers: DispatcherProvider, private val remoteStorage: RemoteStorage,
+    private val contactDao: ContactDao, context: Context
 ) : ViewModel() {
 
     private val _chat = MutableStateFlow<ChatEvent>(ChatEvent.Loading())
@@ -106,14 +104,10 @@ class ChatActivityViewModel(
         if (!isContactBlocked(phoneNumber)) {
             viewModelScope.launch(dispatchers.io) {
                 val messageEntity = Message(
-                    message,
-                    false,
-                    phoneNumber,
-                    null,
-                    true,
+                    message, false, phoneNumber,
+                    null, true,
                     Calendar.getInstance().timeInMillis,
-                    Constants.TEXT_MESSAGE,
-                    null
+                    Constants.TEXT_MESSAGE, null
                 )
 
                 contactDao.insertMessage(messageEntity).also {
@@ -122,7 +116,6 @@ class ChatActivityViewModel(
                 messagingRepository.refreshChats()
                 val data = Data.Builder().apply {
                     putLong(WorkerDataConstants.MESSAGE_ID_KEY, messageEntity.id)
-                    putString(WorkerDataConstants.PHONE_NUM_KEY, phoneNumber)
                 }
                 val req =
                     OneTimeWorkRequestBuilder<SendTextMessageWorker>().setInputData(data.build())
@@ -132,9 +125,9 @@ class ChatActivityViewModel(
         }
     }
 
+    // TODO Set timeout
     fun sendImageMessage(
-        message: String?,
-        path: String, phoneNumber: String, context: Context
+        message: String?, path: String, phoneNumber: String, context: Context
     ) {
         if (!isContactBlocked(phoneNumber)) {
             viewModelScope.launch(dispatchers.io) {
@@ -149,14 +142,9 @@ class ChatActivityViewModel(
 
                     // Save Message instance
                     val messageEntity = Message(
-                        message,
-                        false,
-                        phoneNumber,
-                        null,
-                        true,
-                        Calendar.getInstance().timeInMillis,
-                        Constants.IMAGE_MESSAGE,
-                        imageId
+                        message, false, phoneNumber, null,
+                        true, Calendar.getInstance().timeInMillis,
+                        Constants.IMAGE_MESSAGE, imageId
                     )
                     contactDao.insertMessage(messageEntity).let {
                         messageEntity.id = it
@@ -164,8 +152,6 @@ class ChatActivityViewModel(
                     messagingRepository.refreshChats()
 
                     val data = Data.Builder().apply {
-                        putString(WorkerDataConstants.PHONE_NUM_KEY, phoneNumber)
-                        putString(WorkerDataConstants.LOCAL_IMAGE_ID_KEY, imageId)
                         putLong(WorkerDataConstants.MESSAGE_ID_KEY, messageEntity.id)
                     }
                     val req =
@@ -175,8 +161,16 @@ class ChatActivityViewModel(
                 }
             }
         }
+    }
 
-
+    fun resendImageMessage(messageId: Long) {
+        val data = Data.Builder().apply {
+            putLong(WorkerDataConstants.MESSAGE_ID_KEY, messageId)
+        }
+        val req =
+            OneTimeWorkRequestBuilder<ResendImageMessageWorker>().setInputData(data.build())
+                .build()
+        workManager.beginWith(req).enqueue()
     }
 
     fun updateChatOnOpen(number: String, name: String?) {
@@ -240,5 +234,4 @@ class ChatActivityViewModel(
             }
         }
     }
-
 }

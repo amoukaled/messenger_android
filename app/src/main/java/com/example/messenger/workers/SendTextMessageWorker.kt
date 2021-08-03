@@ -29,7 +29,6 @@ import com.example.messenger.repositories.AuthRepository
 import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
 import com.example.messenger.workers.WorkerDataConstants.MESSAGE_ID_KEY
-import com.example.messenger.workers.WorkerDataConstants.PHONE_NUM_KEY
 
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -52,14 +51,13 @@ class SendTextMessageWorker @AssistedInject constructor(
     @Inject
     lateinit var authRepository: AuthRepository
 
-
     override suspend fun doWork(): Result {
         inputData.apply {
             getLong(MESSAGE_ID_KEY, -1).let { messageId ->
-                getString(PHONE_NUM_KEY)?.let { phoneNumber ->
-                    contactDao.getContactByPhoneNumber(phoneNumber)?.token?.let { token ->
-                        authRepository.getCurrentUser()?.phoneNumber?.let { userNum ->
-                            contactDao.getMessageById(messageId)?.let { message ->
+                contactDao.getMessageById(messageId)?.let { message ->
+                    message.contactOwner.let { phoneNumber ->
+                        contactDao.getContactByPhoneNumber(phoneNumber)?.token?.let { token ->
+                            authRepository.getCurrentUser()?.phoneNumber?.let { userNum ->
                                 val notification =
                                     PushNotification(
                                         NotificationData(

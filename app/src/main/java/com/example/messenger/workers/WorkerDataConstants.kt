@@ -17,9 +17,5 @@
 package com.example.messenger.workers
 
 object WorkerDataConstants {
-
     const val MESSAGE_ID_KEY = "message"
-    const val PHONE_NUM_KEY = "phoneNumber"
-    const val LOCAL_IMAGE_ID_KEY = "localImageId"
-
 }

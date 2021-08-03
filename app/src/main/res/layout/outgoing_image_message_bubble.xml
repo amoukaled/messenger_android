@@ -62,6 +62,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />
 
+            <ImageButton
+                android:id="@+id/resendImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/download_button_background"
+                android:contentDescription="@string/resend"
+                android:src="@drawable/ic_refresh" />
+
         </androidx.cardview.widget.CardView>
 
         <TextView

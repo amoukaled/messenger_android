@@ -30,7 +30,6 @@ import com.example.messenger.repositories.MessagingRepository
 import com.example.messenger.utils.Constants
 import com.example.messenger.utils.ImageUtil
 import com.example.messenger.utils.InternalStorageHelper
-import com.example.messenger.workers.WorkerDataConstants.MESSAGE_ID_KEY
 
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -38,8 +37,9 @@ import dagger.assisted.AssistedInject
 import javax.inject.Inject
 
 @HiltWorker
-class SendImageMessageWorker @AssistedInject constructor(
-    @Assisted context: Context, @Assisted workerParams: WorkerParameters
+class ResendImageMessageWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
 
     @Inject
@@ -51,10 +51,11 @@ class SendImageMessageWorker @AssistedInject constructor(
     @Inject
     lateinit var messagingRepository: MessagingRepository
 
+
     override suspend fun doWork(): Result {
         authRepository.getCurrentUser()?.phoneNumber?.let { userNumber ->
             inputData.apply {
-                getLong(MESSAGE_ID_KEY, -1).let { messageId ->
+                getLong(WorkerDataConstants.MESSAGE_ID_KEY, -1).let { messageId ->
                     contactDao.getMessageById(messageId)?.let { message ->
                         message.imageLink?.let { imageId ->
                             message.contactOwner.let { phoneNumber ->
@@ -79,13 +80,15 @@ class SendImageMessageWorker @AssistedInject constructor(
                                                         bitmap.height
                                                     ), token
                                                 )
+
+                                            // Updating stateflow
+                                            message.isSent = null
+                                            contactDao.updateMessage(message)
+                                            messagingRepository.refreshChats()
+
                                             messagingRepository.sendImageMessage(
-                                                notification,
-                                                message,
-                                                imageId,
-                                                bitmap,
-                                                phoneNumber,
-                                                applicationContext
+                                                notification, message, imageId,
+                                                bitmap, phoneNumber, applicationContext
                                             )
                                             return Result.success()
                                         }
@@ -97,7 +100,6 @@ class SendImageMessageWorker @AssistedInject constructor(
                 }
             }
         }
-
         return Result.failure()
     }
 }

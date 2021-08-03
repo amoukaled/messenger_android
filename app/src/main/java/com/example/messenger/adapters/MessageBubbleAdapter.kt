@@ -321,6 +321,7 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
         private fun bindOutgoingImageMessage(message: Message) {
             // TODO re-upload failed message
             OutgoingImageMessageBubbleBinding.bind(view).apply {
+                // ImageView
                 message.imageLink?.let { imageId ->
                     imageMessageIV.apply {
                         InternalStorageHelper.loadImageFromAppStorage(
@@ -336,19 +337,22 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                     }
                 }
 
+                // Message data
                 message.data?.let { messageData ->
                     imageMessageTV.isVisible = true
                     imageMessageTV.text = messageData
                 }
 
+                // Message timestamp
                 message.timestamp.also {
                     messageTimeTV.text = formatTimeToString(it)
                 }
+
+                // If not sending
                 message.isSent?.let {
-                    if (imageMessagePB.isVisible) {
-                        imageMessagePB.isGone = true
-                    }
+                    if (imageMessagePB.isVisible) imageMessagePB.isGone = true
                     if (it) {
+                        // Message sent
                         messageStatusIV.setImageDrawable(
                             ContextCompat.getDrawable(
                                 messageStatusIV.context,
@@ -356,6 +360,10 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                             )
                         )
 
+                        // Hide resend button
+                        if (resendImageButton.isVisible) resendImageButton.isGone = true
+
+                        // Expand image
                         imageMessageIV.setOnClickListener {
                             // Expand image
                             message.imageLink?.let { imageId ->
@@ -375,24 +383,33 @@ class MessageBubbleAdapter(var messages: List<Message>, private val model: ChatA
                             }
                         }
                     } else {
+                        // Message not sent, show resend button
                         messageStatusIV.setImageDrawable(
                             ContextCompat.getDrawable(
                                 messageStatusIV.context,
                                 R.drawable.ic_error
                             )
                         )
+
+                        // Resend Button
+                        if (resendImageButton.isGone) resendImageButton.isVisible = true
+
+                        resendImageButton.setOnClickListener {
+                            model?.resendImageMessage(message.id)
+                        }
                     }
                     return@apply
                 }
+
+                // If null set loading
                 messageStatusIV.setImageDrawable(
                     ContextCompat.getDrawable(
                         messageStatusIV.context,
                         R.drawable.ic_sending
                     )
                 )
-                if (imageMessagePB.isGone) {
-                    imageMessagePB.isVisible = true
-                }
+                if (imageMessagePB.isGone) imageMessagePB.isVisible = true
+                if (resendImageButton.isVisible) resendImageButton.isGone = true
             }
         }
     }
